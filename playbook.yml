@@ -55,6 +55,16 @@
           - name: restrict other users from accessing database
             postgresql_privs: db={{dbname}} role=PUBLIC type=database priv=ALL state=absent
 
+# copy over config files
+- hosts: all
+  become: true
+  tasks:
+          - name: set up vimrc
+            command: cp /vagrant/static/.vimrc /home/vagrant/.vimrc
 
+          - name: copy nginx config file
+            command: cp /vagrant/static/default /etc/nginx/sites-available/default
+          - name: set up bash profile
+            command: cp /vagrant/static/.bash_profile /home/vagrant/.bash_profile
 
 ...
