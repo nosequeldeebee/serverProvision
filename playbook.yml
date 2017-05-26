@@ -30,6 +30,14 @@
             become: true
             command: npm install -g elm
 
+          - name: install elm-test
+            become: true
+            command: npm install -g elm-test
+
+          - name: install elm-oracle
+            become: true
+            command: npm install -g elm-oracle
+
 # configure Postgres
 - hosts: all
   become: true
@@ -77,5 +85,71 @@
                 path: /home/vagrant/elm/src/github.com/nosequeldeebee
                 state: directory
                 recurse: yes
+
+# set up Vim
+- hosts: all
+  become: true
+  tasks:
+          - name: create autoload directory for pathogen
+            file:
+                path: ~/.vim/autoload
+                state: directory
+                recurse: yes
+
+          - name: create bundle directory for pathogen
+            file:
+                path: ~/.vim/bundle
+                state: directory
+                recurse: yes
+
+          - name: get pathogen module
+            command: curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+
+          - name: clone vim-sensible
+            git:
+                repo: 'git://github.com/tpope/vim-sensible.git'
+                dest: ~/.vim/bundle/vim-sensible
+
+          - name: clone syntastic
+            git:
+                repo: 'https://github.com/scrooloose/syntastic.git'
+                dest: ~/.vim/bundle/syntastic
+
+          - name: get vim-plug
+            command: curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+          - name: clone vim-go
+            git:
+                repo: 'https://github.com/fatih/vim-go.git'
+                dest: ~/.vim/bundle/vim-go
+
+          - name: install vim plugins
+            shell: vim -c ":PlugInstall" -c q -c q -c q
+            register: pluginsInstalled
+
+          - name: install go imports
+            command: go get golang.org/x/tools/cmd/goimports
+            environment:
+                PATH: /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin
+
+          - name: install go code
+            command: go get github.com/nsf/gocode
+            environment:
+                PATH: /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin
+
+          - name: install go def
+            command: go get github.com/rogpeppe/godef
+            environment:
+                PATH: /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin
+
+          - name: install go lint
+            command: go get github.com/golang/lint/golint
+            environment:
+                PATH: /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin
+
+          - name: install errcheck for go
+            command: go get github.com/kisielk/errcheck
+            environment:
+                PATH: /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin
 
 ...
