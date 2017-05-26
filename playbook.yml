@@ -1,0 +1,60 @@
+---
+# install languages and basic packages
+- hosts: all
+  become: true
+  roles:
+          - ansible-go
+          - nodesource.node
+          - {role: jdauphant.nginx, nginx_http_params: ["sendfile on", "access_log /var/log/nginx/access.log"]}
+
+  tasks:
+          - name: ensure apt cache is up to date
+            apt: update_cache=yes
+
+          - name: upgrade apt packages
+            apt: upgrade=yes
+
+          - name: install packages
+            apt: name={{item}}
+            with_items:
+              - git
+              - postgresql
+              - libpq-dev
+              - python-psycopg2
+              - nodejs-legacy
+              - npm
+              - vim
+
+          - name: install elm
+            become: true
+            command: npm install -g elm
+
+
+
+
+# configure Postgres
+- hosts: all
+  become: true
+  become_user: postgres
+
+  vars:
+    dbname: test
+    dbuser: nosequeldeebee
+    dbpassword: #password
+
+  tasks:
+          - name: create database
+            postgresql_db: name={{dbname}}
+
+          - name: give user access to database
+            postgresql_user: db={{dbname}} name={{dbuser}} password={{dbpassword}} priv=ALL
+
+          - name: restrict other privileges for user
+            postgresql_user: name={{dbuser}} role_attr_flags=NOSUPERUSER,NOCREATEDB
+
+          - name: restrict other users from accessing database
+            postgresql_privs: db={{dbname}} role=PUBLIC type=database priv=ALL state=absent
+
+
+
+...
