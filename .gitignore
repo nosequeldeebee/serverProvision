@@ -1,3 +1,4 @@
 bootstrap.sh
 ansible-go/
 .vagrant/
+playbook.retry

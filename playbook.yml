@@ -29,9 +29,6 @@
             become: true
             command: npm install -g elm
 
-
-
-
 # configure Postgres
 - hosts: all
   become: true
@@ -66,5 +63,16 @@
             command: cp /vagrant/static/default /etc/nginx/sites-available/default
           - name: set up bash profile
             command: cp /vagrant/static/.bash_profile /home/vagrant/.bash_profile
+          - name: create directory in bash profile for go
+            file:
+                path: /home/vagrant/go/src/github.com/nosequeldeebee
+                state: directory
+                recurse: yes
+
+          - name: create directory in bash profile for elm
+            file:
+                path: /home/vagrant/elm/src/github.com/nosequeldeebee
+                state: directory
+                recurse: yes
 
 ...
