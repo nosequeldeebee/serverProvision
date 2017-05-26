@@ -11,6 +11,9 @@
           - name: ensure apt cache is up to date
             apt: update_cache=yes
 
+          - name: install aptitude first
+            apt: name=aptitude
+
           - name: upgrade apt packages
             apt: upgrade=yes
 
@@ -21,8 +24,6 @@
               - postgresql
               - libpq-dev
               - python-psycopg2
-              - nodejs-legacy
-              - npm
               - vim
 
           - name: install elm
@@ -61,8 +62,10 @@
 
           - name: copy nginx config file
             command: cp /vagrant/static/default /etc/nginx/sites-available/default
+
           - name: set up bash profile
             command: cp /vagrant/static/.bash_profile /home/vagrant/.bash_profile
+
           - name: create directory in bash profile for go
             file:
                 path: /home/vagrant/go/src/github.com/nosequeldeebee

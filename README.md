@@ -26,7 +26,6 @@ Provisioning using _Vagrant_, _VB_ and _Ansible_.
 * Elm
 * Nginx
 * Nodejs
-* Npm
 * Vim
 * Go
 * Postgres
