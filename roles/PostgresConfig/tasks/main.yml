@@ -1,0 +1,12 @@
+---
+          - name: create database
+            postgresql_db: name={{dbname}}
+
+          - name: give user access to database
+            postgresql_user: db={{dbname}} name={{dbuser}} password={{dbpassword}} priv=ALL
+
+          - name: restrict other privileges for user
+            postgresql_user: name={{dbuser}} role_attr_flags=NOSUPERUSER,NOCREATEDB
+
+          - name: restrict other users from accessing database
+            postgresql_privs: db={{dbname}} role=PUBLIC type=database priv=ALL state=absent

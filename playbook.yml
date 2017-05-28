@@ -6,131 +6,18 @@
           - ansible-go
           - nodesource.node
           - {role: jdauphant.nginx, nginx_http_params: ["sendfile on", "access_log /var/log/nginx/access.log"]}
-
-  tasks:
-          - name: ensure apt cache is up to date
-            apt: update_cache=yes
-
-          - name: install packages
-            apt: name={{item}}
-            with_items:
-              - aptitude
-              - git
-              - postgresql
-              - libpq-dev
-              - python-psycopg2
-              - vim
-
-          - name: upgrade apt packages
-            apt: upgrade=yes
-
-          - name: install elm
-            become: true
-            command: "npm install -g {{item}}"
-            with_items:
-                    - elm
-                    - elm-test
-                    - elm-oracle
+          - baseSetup
 
 # configure Postgres
 - hosts: all
   become: true
   become_user: postgres
-
-  vars:
-    dbname: test
-    dbuser: nosequeldeebee
-    dbpassword: #password
-
-  tasks:
-          - name: create database
-            postgresql_db: name={{dbname}}
-
-          - name: give user access to database
-            postgresql_user: db={{dbname}} name={{dbuser}} password={{dbpassword}} priv=ALL
-
-          - name: restrict other privileges for user
-            postgresql_user: name={{dbuser}} role_attr_flags=NOSUPERUSER,NOCREATEDB
-
-          - name: restrict other users from accessing database
-            postgresql_privs: db={{dbname}} role=PUBLIC type=database priv=ALL state=absent
-
-# copy over config files
-- hosts: all
-  become: true
-  tasks:
-          - name: copy config files to appropriate directories
-            command: "cp {{item}}"
-            with_items:
-                    - /vagrant/static/.vimrc /home/vagrant/.vimrc
-                    - /vagrant/static/.bash_profile /home/vagrant/.bash_profile
-                    - /vagrant/static/default /etc/nginx/sites-available/default
-
-          - name: create directory in bash profile for go
-            file:
-                path: /home/vagrant/go/src/github.com/nosequeldeebee
-                state: directory
-                recurse: yes
-
-          - name: create directory in bash profile for elm
-            file:
-                path: /home/vagrant/elm/src/github.com/nosequeldeebee
-                state: directory
-                recurse: yes
+  roles:
+          - PostgresConfig
 
 # set up Vim
 - hosts: all
   become: true
-  tasks:
-          - name: create autoload directory for pathogen
-            file:
-                path: /home/vagrant/.vim/autoload
-                state: directory
-                recurse: yes
-
-          - name: create bundle directory for pathogen
-            file:
-                path: /home/vagrant/.vim/bundle
-                state: directory
-                recurse: yes
-
-          - name: get pathogen module
-            get_url:
-                    url: https://tpo.pe/pathogen.vim
-                    dest: /home/vagrant/.vim/autoload/pathogen.vim
-
-          - name: clone vim-sensible
-            git:
-                repo: 'git://github.com/tpope/vim-sensible.git'
-                dest: /home/vagrant/.vim/bundle/vim-sensible
-
-          - name: clone syntastic
-            git:
-                repo: 'https://github.com/scrooloose/syntastic.git'
-                dest: /home/vagrant/.vim/bundle/syntastic
-
-          - name: get vim-plug
-            get_url:
-                    url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-                    dest: /home/vagrant/.vim/autoload/plug.vim
-
-          - name: clone vim-go
-            git:
-                repo: 'https://github.com/fatih/vim-go.git'
-                dest: /home/vagrant/.vim/bundle/vim-go
-
-          - name: install vim plugins
-            shell: vim -c ":PlugInstall" -c q -c q -c q
-            register: pluginsInstalled
-
-          - name: install go packages
-            command: "go get {{item}}"
-            environment:
-                PATH: /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin
-            with_items:
-                    - golang.org/x/tools/cmd/goimports
-                    - github.com/nsf/gocode
-                    - github.com/rogpeppe/godef
-                    - github.com/golang/lint/golint
-                    - github.com/kisielk/errcheck
+  roles:
+          - vimSetup
 ...
