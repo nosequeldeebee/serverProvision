@@ -92,36 +92,36 @@
   tasks:
           - name: create autoload directory for pathogen
             file:
-                path: ~/.vim/autoload
+                path: /home/vagrant/.vim/autoload
                 state: directory
                 recurse: yes
 
           - name: create bundle directory for pathogen
             file:
-                path: ~/.vim/bundle
+                path: /home/vagrant/.vim/bundle
                 state: directory
                 recurse: yes
 
           - name: get pathogen module
-            command: curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+            command: curl -LSso /home/vagrant/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
 
           - name: clone vim-sensible
             git:
                 repo: 'git://github.com/tpope/vim-sensible.git'
-                dest: ~/.vim/bundle/vim-sensible
+                dest: /home/vagrant/.vim/bundle/vim-sensible
 
           - name: clone syntastic
             git:
                 repo: 'https://github.com/scrooloose/syntastic.git'
-                dest: ~/.vim/bundle/syntastic
+                dest: /home/vagrant/.vim/bundle/syntastic
 
           - name: get vim-plug
-            command: curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+            command: curl -fLo /home/vagrant/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
           - name: clone vim-go
             git:
                 repo: 'https://github.com/fatih/vim-go.git'
-                dest: ~/.vim/bundle/vim-go
+                dest: /home/vagrant/.vim/bundle/vim-go
 
           - name: install vim plugins
             shell: vim -c ":PlugInstall" -c q -c q -c q
