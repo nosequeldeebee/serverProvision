@@ -11,32 +11,26 @@
           - name: ensure apt cache is up to date
             apt: update_cache=yes
 
-          - name: install aptitude first
-            apt: name=aptitude
-
-          - name: upgrade apt packages
-            apt: upgrade=yes
-
           - name: install packages
             apt: name={{item}}
             with_items:
+              - aptitude
               - git
               - postgresql
               - libpq-dev
               - python-psycopg2
               - vim
 
+          - name: upgrade apt packages
+            apt: upgrade=yes
+
           - name: install elm
             become: true
-            command: npm install -g elm
-
-          - name: install elm-test
-            become: true
-            command: npm install -g elm-test
-
-          - name: install elm-oracle
-            become: true
-            command: npm install -g elm-oracle
+            command: "npm install -g {{item}}"
+            with_items:
+                    - elm
+                    - elm-test
+                    - elm-oracle
 
 # configure Postgres
 - hosts: all
@@ -65,14 +59,12 @@
 - hosts: all
   become: true
   tasks:
-          - name: set up vimrc
-            command: cp /vagrant/static/.vimrc /home/vagrant/.vimrc
-
-          - name: copy nginx config file
-            command: cp /vagrant/static/default /etc/nginx/sites-available/default
-
-          - name: set up bash profile
-            command: cp /vagrant/static/.bash_profile /home/vagrant/.bash_profile
+          - name: copy config files to appropriate directories
+            command: "cp {{item}}"
+            with_items:
+                    - /vagrant/static/.vimrc /home/vagrant/.vimrc
+                    - /vagrant/static/.bash_profile /home/vagrant/.bash_profile
+                    - /vagrant/static/default /etc/nginx/sites-available/default
 
           - name: create directory in bash profile for go
             file:
@@ -131,29 +123,14 @@
             shell: vim -c ":PlugInstall" -c q -c q -c q
             register: pluginsInstalled
 
-          - name: install go imports
-            command: go get golang.org/x/tools/cmd/goimports
+          - name: install go packages
+            command: "go get {{item}}"
             environment:
                 PATH: /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin
-
-          - name: install go code
-            command: go get github.com/nsf/gocode
-            environment:
-                PATH: /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin
-
-          - name: install go def
-            command: go get github.com/rogpeppe/godef
-            environment:
-                PATH: /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin
-
-          - name: install go lint
-            command: go get github.com/golang/lint/golint
-            environment:
-                PATH: /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin
-
-          - name: install errcheck for go
-            command: go get github.com/kisielk/errcheck
-            environment:
-                PATH: /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin
-
+            with_items:
+                    - golang.org/x/tools/cmd/goimports
+                    - github.com/nsf/gocode
+                    - github.com/rogpeppe/godef
+                    - github.com/golang/lint/golint
+                    - github.com/kisielk/errcheck
 ...
