@@ -1,10 +1,12 @@
 ---
           - name: copy config files to appropriate directories
-            command: "cp {{item}}"
+            copy:
+                src: "{{item.src}}"
+                dest: "{{item.dest}}"
             with_items:
-                    - /vagrant/static/.vimrc /home/vagrant/.vimrc
-                    - /vagrant/static/.bash_profile /home/vagrant/.bash_profile
-                    - /vagrant/static/default /etc/nginx/sites-available/default
+                    - { src: './static/.vimrc', dest: '/home/vagrant/.vimrc' }
+                    - { src: './static/.bash_profile', dest: '/home/vagrant/.bash_profile' }
+                    - { src: './static/default', dest: '/etc/nginx/sites-available/default' }
 
           - name: create necessary directories
             file:
