@@ -14,8 +14,8 @@ Provisioning using _Vagrant_, _VB_ and _Ansible_.
 
 * Clone this repo and `cd` to it
 * Install Ansible roles
-  - `ansible galaxy install nodesource.node`
-  - `ansible galaxy install jdauphant.nginx`
+  - `ansible-galaxy install nodesource.node`
+  - `ansible-galaxy install jdauphant.nginx`
   - `git clone https://github.com/jlund/ansible-go.git`
 * `vagrant box add puphpet/ubuntu1604-x64`
 * `vagrant up`
@@ -28,13 +28,13 @@ Provisioning using _Vagrant_, _VB_ and _Ansible_.
 * Nodejs
 * Vim
 * Go
-* Postgres
+* PostgreSQL
 * Git
 
 ## Custom Configurations
 
-- put your `.vimrc` and `.bash_profile` files in static/
-- put your Nginx `default` file in static/
+- put your `.vimrc` and `.bash_profile` files in `static/`
+- put your Nginx `default` file in `static/`
 - configure PostgreSQL user, db and password in the `var` directory of the `PostgresConfig` role
 
 
