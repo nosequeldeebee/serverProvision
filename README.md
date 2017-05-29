@@ -31,4 +31,10 @@ Provisioning using _Vagrant_, _VB_ and _Ansible_.
 * Postgres
 * Git
 
+## Custom Configurations
+
+- put your `.vimrc` and `.bash_profile` files in static/
+- put your Nginx `default` file in static/
+- configure PostgreSQL user, db and password in the `var` directory of the `PostgresConfig` role
+
 

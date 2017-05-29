@@ -6,54 +6,35 @@
                     - /vagrant/static/.bash_profile /home/vagrant/.bash_profile
                     - /vagrant/static/default /etc/nginx/sites-available/default
 
-          - name: create directory in bash profile for go
+          - name: create necessary directories
             file:
-                path: /home/vagrant/go/src/github.com/nosequeldeebee
+                path: "{{item}}"
                 state: directory
                 recurse: yes
-
-          - name: create directory in bash profile for elm
-            file:
-                path: /home/vagrant/elm/src/github.com/nosequeldeebee
-                state: directory
-                recurse: yes
-
-          - name: create autoload directory for pathogen
-            file:
-                path: /home/vagrant/.vim/autoload
-                state: directory
-                recurse: yes
-
-          - name: create bundle directory for pathogen
-            file:
-                path: /home/vagrant/.vim/bundle
-                state: directory
-                recurse: yes
+            with_items:
+                - /home/vagrant/go/src/github.com/nosequeldeebee
+                - /home/vagrant/elm/src/github.com/nosequeldeebee
+                - /home/vagrant/.vim/autoload
+                - /home/vagrant/.vim/bundle
 
           - name: get pathogen module
             get_url:
                     url: https://tpo.pe/pathogen.vim
                     dest: /home/vagrant/.vim/autoload/pathogen.vim
 
-          - name: clone vim-sensible
-            git:
-                repo: 'git://github.com/tpope/vim-sensible.git'
-                dest: /home/vagrant/.vim/bundle/vim-sensible
-
-          - name: clone syntastic
-            git:
-                repo: 'https://github.com/scrooloose/syntastic.git'
-                dest: /home/vagrant/.vim/bundle/syntastic
-
           - name: get vim-plug
             get_url:
                     url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
                     dest: /home/vagrant/.vim/autoload/plug.vim
 
-          - name: clone vim-go
+          - name: clone git repos
             git:
-                repo: 'https://github.com/fatih/vim-go.git'
-                dest: /home/vagrant/.vim/bundle/vim-go
+                repo: "{{item.repo}}"
+                dest: "{{item.dest}}"
+            with_items:
+                - { repo: 'git://github.com/tpope/vim-sensible.git', dest: '/home/vagrant/.vim/bundle/vim-sensible' }
+                - { repo: 'https://github.com/scrooloose/syntastic.git', dest: '/home/vagrant/.vim/bundle/syntastic' }
+                - { repo: 'https://github.com/fatih/vim-go.git', dest: '/home/vagrant/.vim/bundle/vim-go' }
 
           - name: install vim plugins
             shell: vim -c ":PlugInstall" -c q -c q -c q

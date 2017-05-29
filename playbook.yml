@@ -7,17 +7,6 @@
           - nodesource.node
           - {role: jdauphant.nginx, nginx_http_params: ["sendfile on", "access_log /var/log/nginx/access.log"]}
           - baseSetup
-
-# configure Postgres
-- hosts: all
-  become: true
-  become_user: postgres
-  roles:
-          - PostgresConfig
-
-# set up Vim
-- hosts: all
-  become: true
-  roles:
           - vimSetup
+          - {role: PostgresConfig, become_user: postgres}
 ...
